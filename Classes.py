@@ -29,8 +29,18 @@ class Location:
         return "%3s %45s %40s" % (self.id, self.name, self.address)
 
 
+class Format:
+    BLUE = '\33[94m'
+    YELLOW = '\33[93m'
+    GREEN = '\33[92m'
+    RED = '\33[91m'
+    BOLD = '\33[01m'
+    UNDERLINE = '\33[04m'
+    END = '\33[0m'
+
+
 class Status:
-    AT_HUB = '\33[94m' + 'AT_HUB' + '\33[0m'
-    EN_ROUTE = '\33[93m' + 'EN_ROUTE' + '\33[0m'
-    DELIVERED = '\33[92m' + 'DELIVERED' + '\33[0m'
-    LATE = '\33[91m' + 'LATE' + '\33[0m'
+    AT_HUB = Format.BLUE + 'AT_HUB' + Format.END
+    EN_ROUTE = Format.YELLOW + 'EN_ROUTE' + Format.END
+    DELIVERED = Format.GREEN + 'DELIVERED' + Format.END
+    LATE = Format.RED + 'LATE' + Format.END
