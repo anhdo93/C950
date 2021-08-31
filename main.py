@@ -1,51 +1,87 @@
 # Anh Do (Student ID #001511153)
 from Classes import Format
 import simulation
+from readData import convert_time
+import os
 
-'''
-    INTERFACE REQUIREMENTS:
-    1. Status/Info of any package at any time
-    2. Total mileage traveled by all trucks
-    3. Status of all packages at a time between:
-        a. 08:35 am  - 09:25 am
-        b. 09:35 am  - 10:25 am
-        c. 12:03 pm  - 01:12 pm
-'''
 
 # USER INTERFACE--------------------------------------------------------------------------------------------------------
-welcome = Format.BOLD + Format.YELLOW + ' WGUPS Routing Program ' + Format.END
-print(welcome.center(60, "-"))
-option = int(input('''
-Select one of the following options:
-   1. Package delivery status
-   2. Total mileage traveled by all trucks 
-   3. Truck routes simulation
-   4. Open screenshots 
- >>> OPTION: '''))
+def program_start():
+    welcome = Format.BOLD + Format.YELLOW + ' WGUPS Routing Program ' + Format.END
+    print(welcome.center(105, "*"))
+    instruction = '''
+    Select one of the following options:
+       1. Package delivery status
+       2. Total mileage traveled by all trucks
+       3. Truck routes simulation
+       4. Open screenshots
+       5. Exit
+    '''
+    print(instruction)
 
-if option == 1:
-    option_txt = Format.UNDERLINE + 'PACKAGE DELIVERY STATUS' + Format.END
-    print(option_txt)
-    time = input('- Enter time in "HH:MM" format: ')
-    pkg = int(input('''- Select package(s):
-       0. All packages
-    1-40. Specific package
->>> PACKAGE SELECTION: '''))
-    simulation.package_status(pkg)
 
-elif option == 2:
-    option_txt = Format.UNDERLINE + 'TRUCK TOTAL MILEAGE' + Format.END
-    print(option_txt)
-    simulation.run('23:59', False)
-    simulation.truck_mileage()
+print('Optimizing routes...')
+simulation.run(False)
+print('Optimization completed!')
+program_start()
+while True:
+    option = int(input('>>> OPTION: '))
 
-elif option == 3:
-    option_txt = Format.UNDERLINE + 'TRUCK ROUTES SIMULATION' + Format.END
-    print(option_txt)
-    simulation.run('23:59', True)
+    if option == 1:
+        option_txt = Format.UNDERLINE + 'PACKAGE DELIVERY STATUS' + Format.END
+        print(option_txt)
+        while True:
+            try:
+                time = input('- Enter time in "HH:MM" format: ')
+                time = convert_time(time)
+                break
+            except ValueError:
+                print('ERROR: Invalid time format')
+                continue
 
-else:
-    pass
+        pkg = int(input('''- Select package(s):
+           0. All packages
+        1-40. Specific package
+    >>> PACKAGE SELECTION: '''))
+        simulation.package_status(pkg, time)
+        print(' END PROGRAM '.center(91, '='))
+        print('Program restarts...')
+        program_start()
+
+    elif option == 2:
+        option_txt = Format.UNDERLINE + 'TRUCK TOTAL MILEAGE' + Format.END
+        print(option_txt)
+        simulation.truck_mileage()
+        print(' END PROGRAM '.center(91, '='))
+        print('Program restarts...')
+        program_start()
+
+    elif option == 3:
+        option_txt = Format.UNDERLINE + 'TRUCK ROUTES SIMULATION' + Format.END
+        print(option_txt)
+
+        simulation.run(True)
+        print(' END PROGRAM '.center(91, '='))
+        print('Program restarts...')
+        program_start()
+
+    elif option == 4:
+        print('Opening screenshots...')
+
+        os.startfile('.\Screenshots\Package Status 0900.png')
+        os.startfile('.\Screenshots\Package Status 1000.png')
+        os.startfile('.\Screenshots\Package Status 1230.png')
+
+        print(' END PROGRAM '.center(91, '='))
+        print('Program restarts...')
+        program_start()
+
+    elif option == 5:
+        print('\n\nClosing program...')
+        exit()
+
+    else:
+        print('Invalid input. Please select option 1-5.')
 
 
 
