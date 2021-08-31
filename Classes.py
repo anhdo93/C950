@@ -11,9 +11,14 @@ class Package:
         self.notes = notes
         self.status = status
         self.location_id = location_id
+        self.departure = None
+        self.arrival = None
+        self.truck = None
 
     def __str__(self):
-        return "%3s %10s %10s" % (self.id, self.deadline, self.status)
+        return '| {:^3} | {:^5} | {:^8} | {:^8} | {:^24} | {:^8} |'\
+            .format(self.id, self.truck, self.departure.strftime('%H:%M'), self.arrival.strftime('%H:%M'),
+                    self.status, self.deadline.strftime('%H:%M'))
 
 
 class Location:
