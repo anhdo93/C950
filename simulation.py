@@ -1,60 +1,63 @@
 from functions import *
+from init import *
 import optimize
 from datetime import timedelta
-import sys, os
 
 
-# Disable
-def blockPrint():
-    sys.stdout = open(os.devnull, 'w')
-
-
-# Restore
-def enablePrint():
-    sys.stdout = sys.__stdout__
+mileage = [0 for i in range(len(truck)+1)]
+current_time = [start_time for i in range(len(truck) + 1)]  # Delivery starts at 8:00 AM
+departure_time = current_time
+departure_time[2] = delayed_time  # Truck 2 starts at delayed time
 
 
 # PACKAGES DELIVERY-----------------------------------------------------------------------------------------------------
-def run(time_string, printRoute):
-    time = convert_time(time_string)
+def run(printRoute):
     if not printRoute:
         blockPrint()
+    global current_time, mileage, departure_time
+    current_time = [convert_time('08:00') for i in range(len(truck) + 1)]  # Delivery starts at 8:00 AM
+    departure_time = [convert_time('08:00') for i in range(len(truck) + 1)]
+    departure_time[2] = delayed_time  # Truck 2 starts at delayed time
+    mileage = [0 for i in range(len(truck) + 1)]  # Reset mileage every time simulation runs
     total_mileage = 0
     for t in truck:
         if t == 3:
-            start_time[t] = min(start_time[1], start_time[2])  # Truck 3 starts when either truck 1 or 2 arrives at hub
+            current_time[t] = min(current_time[1], current_time[2])  # Truck 3 starts when either truck 1 or 2 arrives at hub
 
         current_location = 0
         package_index = 0
 
-        print('--------- TRUCK {} ----------'.format(t))
-        print('Truck {} Route: '.format(t), end='')
-        print(*route_for_truck[t], sep=' --> ')
-        print('Truck {} Packages: {}'.format(t, packages_on_truck[t]))
+        print(' TRUCK {} '.format(t).center(91, '-'))
+        print('Route: 0 -> ', end='')
+        print(*route_for_truck[t], sep=' -> ')
+        print('Packages: {}'.format(packages_on_truck[t]))
+        print_truck_header()
 
         for destination in route_for_truck[t]:
             for pkg in packages_on_truck[t]:
-                # Find package with wrong address to update
                 found_error = False
+                # Find package with wrong address to update
                 current_package = get_package(pkg)
-                if (current_package.location_id == destination) and ('Wrong address' in get_package(pkg).notes):
+                current_package.truck = t  # Current package on truck t
+                current_package.departure = departure_time[t]
+                next_location = current_package.location_id
+                if (get_package(pkg).location_id == destination) and ('Wrong address' in get_package(pkg).notes):
                     error_package = current_package
-                    if error_package.status != Status.DELIVERED:
+                    if not found_error:
                         found_error = True
-                        if start_time[t] < update_time:  # wait until update time to correct address
-                            start_time[t] = update_time
+                        if current_time[t] < update_time:  # wait until update time to correct address
+                            current_time[t] = update_time
                         error_package.address = '410 S State St'
                         error_package.city = 'Salt Lake City'
                         error_package.state = 'UT'
                         error_package.zip = '84111'
-                        error_package.notes = 'Fixed address'
-                        error_package.location_id = locationHashTable.get(error_package.address).id
+                        next_location = locationHashTable.get(error_package.address).id
                 # Deliver package to destination
                 if (current_package.location_id == destination) or found_error:
                     current_package.status = Status.EN_ROUTE
-                    next_location = get_package(pkg).location_id
-                    delivery_time = start_time[t] + timedelta(hours=distance[current_location][next_location]/speed)
+                    delivery_time = current_time[t] + timedelta(hours=distance[current_location][next_location] / speed)
                     mileage[t] += distance[current_location][next_location]
+                    current_package.arrival = delivery_time
                     if delivery_time > current_package.deadline:  # Check if package can arrive on time
                         current_package.status = Status.LATE
                     else:
@@ -63,12 +66,13 @@ def run(time_string, printRoute):
                         package_index += 1
                     else:
                         package_index = 0
-                    print('{}-{:2} Package {:3}: {:>3} -> {:>3} [{:>4} miles ] Start: {}  Delivered: {} {:>19}  (Deadline {:>6})'
+                    #print('{}-{:2} Package {:3}: {:>3} -> {:>3} [{:>4} miles ] Start: {}  Delivered: {} {:>19}  (Deadline {:>6})'
+                    print('| {:^5} | {:^5} | {:^3} | {:>2} -> {:>2} | {:^5} | {:^7} | {:^7} | {:^24} | {:^8} |'
                           .format(t, package_index, current_package.id, current_location, next_location, distance[current_location][next_location],
-                                  start_time[t].strftime('%H:%M'), delivery_time.strftime('%H:%M'),
+                                  current_time[t].strftime('%H:%M'), delivery_time.strftime('%H:%M'),
                                   current_package.status, current_package.deadline.strftime('%H:%M')))
                     current_location = next_location
-                    start_time[t] = delivery_time
+                    current_time[t] = delivery_time
 
         print('Truck {} traveled {:.1f} miles'.format(t, mileage[t]))
         total_mileage += mileage[t]
@@ -85,8 +89,22 @@ def truck_mileage():
     print('TOTAL MILEAGE: {} miles'.format(total_miles))
 
 
-def package_status(pkg):
+def package_status(pkg, status_time):
+    print_package_header()
     if pkg == 0:
-        pass
+        for pkg in package_list:
+            if status_time <= get_package(pkg).departure:
+                get_package(pkg).status = Status.AT_HUB
+            elif status_time <= get_package(pkg).arrival:
+                get_package(pkg).status = Status.EN_ROUTE
+            else:
+                get_package(pkg).status = Status.DELIVERED
+            print(get_package(pkg))
     else:
-        pass
+        if status_time <= get_package(pkg).departure:
+            get_package(pkg).status = Status.AT_HUB
+        elif status_time <= get_package(pkg).arrival:
+            get_package(pkg).status = Status.EN_ROUTE
+        else:
+            get_package(pkg).status = Status.DELIVERED
+        print(get_package(pkg))
