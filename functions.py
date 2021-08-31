@@ -1,4 +1,5 @@
 from init import *
+import sys, os
 
 
 # FUNCTIONS-------------------------------------------------------------------------------------------------------------
@@ -46,3 +47,29 @@ def optimized_route(route):  # 2-opt algorithm for avoiding crossing and optimiz
                     optimized = True
         route = opt_route
     return opt_route
+
+
+# Disable printing
+def blockPrint():
+    sys.stdout = open(os.devnull, 'w')
+
+
+# Restore printing
+def enablePrint():
+    sys.stdout = sys.__stdout__
+
+
+# Truck simulation header
+def print_truck_header():
+    print('-' * 91)
+    print('| {:^5} | {:^5} | {:^3} | {:^8} | {:^5} | {:^7} | {:^7} | {:^15} | {:^8} |'
+          .format('Truck', 'Count', 'Pkg', 'Route', 'Miles', 'From', 'To', 'Status', 'Deadline'))
+    print('-'*91)
+
+
+# Package header
+def print_package_header():
+    print('-' * 66)
+    print('| {:^3} | {:^5} | {:^8} | {:^8} | {:^15} | {:^8} |'
+          .format('Pkg', 'Truck', 'Depart', 'ETA', 'Status', 'Deadline'))
+    print('-'*66)
