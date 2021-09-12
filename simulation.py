@@ -12,6 +12,13 @@ departure_time[2] = delayed_time  # Truck 2 starts at delayed time
 
 # PACKAGES DELIVERY-----------------------------------------------------------------------------------------------------
 def run(printRoute):
+    """Run package delivery simulation
+
+    Space Complexity O(N)
+    Time Complexity O(N^2)
+    :param printRoute: True to enable printing, False to disable printing
+    :return package delivery simulation report if printing enabled
+    """
     if not printRoute:
         blockPrint()
     global current_time, mileage, departure_time
@@ -66,9 +73,10 @@ def run(printRoute):
                         package_index += 1
                     else:
                         package_index = 0
-                    #print('{}-{:2} Package {:3}: {:>3} -> {:>3} [{:>4} miles ] Start: {}  Delivered: {} {:>19}  (Deadline {:>6})'
+
                     print('| {:^5} | {:^5} | {:^3} | {:>2} -> {:>2} | {:^5} | {:^7} | {:^7} | {:^24} | {:^8} |'
-                          .format(t, package_index, current_package.id, current_location, next_location, distance[current_location][next_location],
+                          .format(t, package_index, current_package.id, current_location,
+                                  next_location, distance[current_location][next_location],
                                   current_time[t].strftime('%H:%M'), delivery_time.strftime('%H:%M'),
                                   current_package.status, current_package.deadline.strftime('%H:%M')))
                     current_location = next_location
@@ -82,6 +90,12 @@ def run(printRoute):
 
 
 def truck_mileage():
+    """Print total mileage traveled by all trucks
+
+    Space Complexity O(1)
+    Time Complexity O(1)
+    :return: total mileage traveled by all trucks
+    """
     total_miles = 0
     for t in truck:
         print('Truck {} traveled {:.1f} miles'.format(t, mileage[t]))
@@ -90,6 +104,14 @@ def truck_mileage():
 
 
 def package_status(pkg, status_time):
+    """Print package(s) status
+
+    Space Complexity O(N)
+    Time Complexity O(N)
+    :param pkg: package index, 0 for all packages
+    :param status_time: time at the consideration
+    :return: package status
+    """
     print_package_header()
     if pkg == 0:
         for pkg in package_list:

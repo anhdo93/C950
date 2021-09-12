@@ -5,6 +5,13 @@ from datetime import datetime
 
 
 def convert_time(time):
+    """Convert time string in 'HH:MM' format to datetime object
+
+    Space Complexity O(1)
+    Time Complexity O(1)
+    :param time: time string
+    :return: datetime object
+    """
     return datetime.strptime(datetime.today().strftime('%Y-%m-%d') + ' ' + time, '%Y-%m-%d %H:%M')
 
 
@@ -54,20 +61,25 @@ with open('./Data/WGUPS Distance Table.csv') as csvfile:
 
 
 def get_package_hash_table():
+    """Get package hash table"""
     return packageHashTable
 
 
 def get_location_hash_table():
+    """Get location hash table"""
     return locationHashTable
 
 
 def get_distance_map():
+    """Get distance map"""
     return distance
 
 
 def get_package_count():
+    """Get package count"""
     return packageCount
 
 
 def get_location_count():
+    """Get location count"""
     return locationCount

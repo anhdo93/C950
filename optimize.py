@@ -2,36 +2,22 @@ from functions import *
 
 
 # GREEDY ALGORITHM------------------------------------------------------------------------------------------------------
-'''
-    PSEUDOCODE 
+"""Load packages into truck 1 and 2 based on priority
 
-    PACKAGES LOADING   
-    Load Truck 1 (Time-sensitive) with time-sensitive packages
-    Load Truck 2 (Required) with required and delayed packages
-    Load Truck 3 with remaining EOD packages
-        If (package is on the route of truck 1 or 2) and (space is available):
-            Load package into corresponding truck
-        Else:
-            If truck 3 has available space:
-                Load package into truck 3
-            Else:
-                Load into truck 2        
-
-    PACKAGES DELIVERY                        
-    Truck 1 delivery starts at 8:00 AM
-    Truck 2 delivery starts at 9:05 AM
-    Truck 3 delivery starts when truck 1 or 2 arrives at hub
-    For package(s) with wrong address:
-        Wait until 10:20am to update correct address            
-'''
-# Load packages into truck 1 and 2 based on priority
+Space Complexity O(N)
+Time Complexity O(N)
+"""
 for pkg in package_list:
     t = assigned_truck(pkg)
     if (available[t] > 0) and (t == 1):
         load(pkg, t)
     if (available[t] > 0) and (t == 2):
         load(pkg, t)
-# Load remaining packages into truck 1 and 2 if on the same route. If not, load into truck 3.
+"""Load remaining packages into truck 1 and 2 if on the same route. If not, load into truck 3.
+
+Space Complexity O(N)
+Time Complexity O(N)
+"""
 for pkg in package_list:
     t = assigned_truck(pkg)
     if t == 3:
@@ -50,6 +36,11 @@ for pkg in package_list:
 
 
 # NEAREST NEIGHBOR & 2-OPT ALGORITHMS-----------------------------------------------------------------------------------
+"""Optimizing truck routes
+
+Space Complexity O(N)
+Time Complexity O(N^2)
+"""
 for t in truck:
     route = [0]  # Initialized route starting at hub. Current location = route[-1]
     for i in route_for_truck[t]:

@@ -1,14 +1,27 @@
 # HashTable class using chaining.
 class HashTable:
-    # Constructor with optional initial capacity parameter.
-    # Assigns all buckets with an empty list.
+    """Constructor with optional initial capacity parameter."""
+
     def __init__(self, initial_capacity=10):
-        # initialize the hash table with empty bucket list entries.
+        """initialize the hash table with empty bucket list entries.
+
+        Space Complexity O(1)
+        Time Complexity O(1)
+        :param initial_capacity: number of buckets
+        """
         self.table = []
         for i in range(initial_capacity):
             self.table.append([])
 
-    def insert(self, key, item):  # does both insert and update
+    def insert(self, key, item):
+        """insert and update item
+
+        Space Complexity O(N)
+        Time Complexity O(N)
+        :param key: item index
+        :param item: item
+        :return: True
+        """
         # get the bucket list where this item will go.
         bucket = hash(key) % len(self.table)
         bucket_list = self.table[bucket]
@@ -26,6 +39,13 @@ class HashTable:
         return True
 
     def get(self, key):
+        """lookup function for a given key
+
+        Space Complexity O(N)
+        Time Complexity O(N)
+        :param key: item index
+        :return: None
+        """
         # get the bucket list where this key would be.
         bucket = hash(key) % len(self.table)
         bucket_list = self.table[bucket]
@@ -37,6 +57,10 @@ class HashTable:
         return None
 
     def remove(self, key):
+        """remove item from hash table for a given key
+
+        :param key: item index
+        """
         # get the bucket list where this item will be removed from.
         bucket = hash(key) % len(self.table)
         bucket_list = self.table[bucket]
