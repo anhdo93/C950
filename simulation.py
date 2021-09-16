@@ -24,6 +24,7 @@ def run(printRoute):
     global current_time, mileage, departure_time
     current_time = [convert_time('08:00') for i in range(len(truck) + 1)]  # Delivery starts at 8:00 AM
     departure_time = [convert_time('08:00') for i in range(len(truck) + 1)]
+    current_time[2] = delayed_time  # Truck 2 starts at delayed time
     departure_time[2] = delayed_time  # Truck 2 starts at delayed time
     mileage = [0 for i in range(len(truck) + 1)]  # Reset mileage every time simulation runs
     total_mileage = 0
@@ -115,12 +116,14 @@ def package_status(pkg, status_time):
     print_package_header()
     if pkg == 0:
         for pkg in package_list:
+
             if status_time <= get_package(pkg).departure:
                 get_package(pkg).status = Status.AT_HUB
             elif status_time <= get_package(pkg).arrival:
                 get_package(pkg).status = Status.EN_ROUTE
             else:
                 get_package(pkg).status = Status.DELIVERED
+
             print(get_package(pkg))
     else:
         if status_time <= get_package(pkg).departure:
